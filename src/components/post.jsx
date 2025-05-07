@@ -1,13 +1,31 @@
 import { useContext } from "react";
 import { PostListContext } from "../postListStore";
 import { MdDelete } from "react-icons/md";
-
+import Message from "./message";
 
 function Post() {
-  const { postList,deletePost } = useContext(PostListContext);
+  const { postList,deletePost,fetchPosts,addPost } = useContext(PostListContext);
+  
+//   const onfetchPosts=()=>{
+//     fetch('https://dummyjson.com/posts')
+// .then(res => res.json())
+// .then((data)=>{fetchPosts(data.posts)});
+//   }
+
+const onfetchPosts = () => {
+  fetch("https://dummyjson.com/posts")
+    .then((res) => res.json())
+    .then((data) => {
+      data.posts.forEach((post) => {
+        addPost(post.title, post.body, post.tags, post.reactions); 
+      });
+    });
+};
 
 
   return (
+    <>
+    {postList.length===0 && <Message onfetchPosts={onfetchPosts}></Message>}
     <div className="row row-cols-1 row-cols-md-3 g-4 post">
       {postList.map((post) => (
         <div className="col" key={post.id}>
@@ -29,14 +47,17 @@ function Post() {
                   </button>
                 ))}
               </div>
-              <div className="alert alert-primary reactions" role="alert">
-                This Post has been viewed by {post.reaction} people.
-              </div>
+              <div>
+  Likes: {post.reactions.likes}, Dislikes: {post.reactions.dislikes}
+</div>
+
+
             </div>
           </div>
         </div>
       ))}
     </div>
+    </>
   );
 }
 

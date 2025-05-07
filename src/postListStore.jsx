@@ -3,26 +3,28 @@ import { createContext,useReducer } from "react";
 export const PostListContext=createContext({
   postList:[],
   addPost:()=>{},
+  fetchPosts:()=>{},
   deletePost:()=>{},
 });
-const default_value=[
-  {
-     id:"1",
-     title:"Trending News",
-     body:"India attack Pakistan",
-     reaction:2000,
-     userId:"user-1",
-     tags:["revenge","forgive"]       
-  },
-  {
-     id:"2",
-     title:"Upcoming New",
-     body:"Will Pakistan Attack India",
-     reaction:3000,
-     userId:"user-2",
-     tags:["attack","blast"]       
-  },
-]
+// const default_value=[
+//   {
+//      id:"1",
+//      title:"Trending News",
+//      body:"India attack Pakistan",
+//      reaction:2000,
+//      userId:"user-1",
+//      tags:["revenge","forgive"]       
+//   },
+//   {
+//      id:"2",
+//      title:"Upcoming New",
+//      body:"Will Pakistan Attack India",
+//      reaction:3000,
+//      userId:"user-2",
+//      tags:["attack","blast"]       
+//   },
+// ]
+
 
 const postListReducer=(currentPosts,action)=>{
     let newPosts=currentPosts;
@@ -32,21 +34,24 @@ const postListReducer=(currentPosts,action)=>{
     else if(action.type==="ADD-POST"){
       newPosts=[action.payload,...currentPosts];
     }
+    else if(action.type==="FETCH-POST"){
+      newPosts=action.payload.posts;
+    }
     return newPosts;
 }
 const PostListContextProvider=({children})=>{
 
-    const[postList,dispatchPostlist]=useReducer(postListReducer,default_value);
+    const[postList,dispatchPostlist]=useReducer(postListReducer,[]);
 
     const addPost=(posttitle,posttext,posttags,postreactions)=>{
       dispatchPostlist({
         type:"ADD-POST",
         payload:{
-          id:Date.now().toString(),
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           title:posttitle,
           body:posttext,
           tags:posttags,
-          reaction:parseInt(postreactions),
+          reactions:postreactions,
         }
       })
     };
@@ -59,8 +64,17 @@ const PostListContextProvider=({children})=>{
       })
     };
 
+    const fetchPosts=(posts)=>{
+      dispatchPostlist({
+        type:"FETCH-POST",
+        payload:{
+          posts,
+        }
+      })
+    };
+
     return (
-      <PostListContext.Provider value={{postList,addPost,deletePost}}>
+      <PostListContext.Provider value={{postList,addPost,deletePost,fetchPosts}}>
         {children}
       </PostListContext.Provider> 
     )

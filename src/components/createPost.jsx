@@ -14,8 +14,8 @@ function CreatePost() {
     const posttext = postText.current.value;
     const posttags = postTags.current.value.split(" ").map(tag => tag.trim());
 
-    const postreactions = postReactions.current.value;
-    addPost(posttitle, posttext, posttags, postreactions);
+    const reactions = postReactions.current.value;
+    addPost(posttitle, posttext, posttags,reactions);
 
     postTitle.current.value = "";
     postText.current.value = "";
